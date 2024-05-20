@@ -10,12 +10,13 @@ class AIRunner:
         self.tokenizer = AutoTokenizer.from_pretrained(self.model_id)
         self.model = AutoModelForCausalLM.from_pretrained(self.model_id, torch_dtype=torch.float16).to('cuda')
 
-    def load_model(self, data, address=0):
-        # Placeholder for actual model loading logic
-        pass
+    def load_model(self, model_name):
+        """Load a Hugging Face model."""
+        self.tokenizer = AutoTokenizer.from_pretrained(model_name)
+        self.model = AutoModelForCausalLM.from_pretrained(model_name)
 
-    def run_inference(self, instructions):
-        text = instructions[0].get('prompt', 'Hello')
-        inputs = self.tokenizer(text, return_tensors="pt").to('cuda')
-        outputs = self.model.generate(**inputs, max_new_tokens=20)
+    def run_inference(self, input_text):
+        """Run inference on the loaded model."""
+        inputs = self.tokenizer(input_text, return_tensors="pt")
+        outputs = self.model.generate(**inputs)
         return self.tokenizer.decode(outputs[0], skip_special_tokens=True)

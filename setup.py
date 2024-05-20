@@ -10,7 +10,7 @@ setup(
     ],
     entry_points={
         'console_scripts': [
-            'jota-os-shell = jota_os.shell:main',
+            'jotaos = jota_os.shell:main',
         ],
     },
 )

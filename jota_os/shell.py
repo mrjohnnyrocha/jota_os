@@ -6,6 +6,7 @@ import os
 import re
 import shlex
 from jpu.api import jpuAPI as j
+from jpu.runners.python import PythonRunner
 from .nfs import FileSystem
 from .network import Network
 from .processes import ProcessManager
@@ -18,6 +19,7 @@ class Shell:
         self.network = Network()
         self.pm = ProcessManager()
         self.ai_runner = AIRunner() if include_ai else None
+        self.python_runner = PythonRunner()
         self.api =j()
 
     def sanitize_input(self, user_input):
@@ -136,6 +138,17 @@ class Shell:
                 _, data = command.split(maxsplit=1)
                 self.ai_runner.load_model([int(x) for x in data.split()])
                 print("Model loaded.")
+            elif command.startswith("python run"):
+                _, script_path = command.split()
+                self.python_runner.run_script(script_path)
+            elif command.startswith("python install"):
+                package_name = command.split()[-1]
+                self.python_runner.run_pip_command(['install', package_name])
+            elif command.startswith("python uninstall"):
+                package_name = command.split()[-1]
+                self.python_runner.run_pip_command(['uninstall', '-y', package_name])
+            elif command.startswith("python list"):
+                self.python_runner.run_pip_command(['list'])
             elif command.startswith("rm"):
                 _, path = command.split()
                 self.api.rm(path)
